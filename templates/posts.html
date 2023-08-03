@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Posts</title>
+</head>
+<body>
+    <div class="main">
+        {% csrf_token %}
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post">
+                    <h1>{{ post.title }}</h1>
+                    <p>{{ post.body }}</p>
+                    <h3>автор - {{ post.user.username }}</h3>
+                </div>
+                {% if request.user == author %}
+                    <div class="form">
+                        <div class="delete_new_post_form">
+                            <form post-id="{{ post.id }}" class="delete_form">
+                                <button style="color: red; padding:10px 15px" type="submit">Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% if request.user == author %}
+                <div style="margin-top: 20px;" class="add_new_post_form">
+                    <form style="display: flex; flex-direction:column; gap: 15px; max-width: 30%;">
+                        <input type="text" name="title" placeholder="Заголовок поста">
+                        <textarea name="body" placeholder="Содержимое поста" cols="30" rows="10"></textarea>
+                        <button style="color: rgb(0, 102, 255); padding:10px 15px" type="submit">Добавить</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script>
+        const delete_forms = document.querySelectorAll('form.delete_form')
+        delete_forms.forEach(form => {
+            form.addEventListener('submit', e => {
+                e.preventDefault()
+                fetch(`/api/delete_post/${form.getAttribute('post-id')}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('input[name=csrfmiddlewaretoken]').value,
+                    }
+                }).then(response => {
+                    if(response.status == 204){
+                        window.location.reload()
+                    }
+                })
+            })
+        })
+        const add_new_post_form = document.querySelector('.add_new_post_form form')
+        add_new_post_form.addEventListener('submit', e => {
+            e.preventDefault()
+                fetch("{% url 'api:add_post' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json;charset=utf-8',
+                        'X-CSRFToken': document.querySelector('input[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify({
+                        title: add_new_post_form.querySelector('input[name="title"]').value,
+                        body: add_new_post_form.querySelector('textarea[name="body"]').value,
+                    })
+                }).then(response => {
+                    if(response.status == 201){
+                        window.location.reload()
+                    }
+                })
+        })
+    </script>
+</body>
+</html>
