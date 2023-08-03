@@ -6,6 +6,7 @@ from main.models import MyUser, Post
 
 
 class APITest(APITestCase):
+    """ API Testing """
 
     def setUp(self) -> None:
         self.client = APIClient()
@@ -16,6 +17,7 @@ class APITest(APITestCase):
         )
 
     def test_all_users(self):
+        """ Тест для отображения всех пользователей в системе """
         MyUser.objects.create(
             username='Alina',
             email='alina@gmail.com',
@@ -30,6 +32,9 @@ class APITest(APITestCase):
         assert response.status_code == 200
 
     def test_all_posts_of_user(self):
+        """ Тест для отображения постов конкретного пользователя """
+
+        # Создание другого пользователя, чтобы привязать к нему пост
         another_user = MyUser.objects.create(
             username='Alina',
             email='alina@gmail.com',
@@ -48,6 +53,7 @@ class APITest(APITestCase):
             user=self.user
         )
 
+        #Создание поста не относящегося к постам проверяемого пользователя
         Post.objects.create(
             title='Test3',
             body='test body3',
@@ -62,6 +68,7 @@ class APITest(APITestCase):
         assert len(response.json()) == 2
 
     def test_creation_post(self):
+        """ Тест для проверки создания поста """
         data = {
             'title': 'test',
             'body': 'body',
@@ -75,6 +82,7 @@ class APITest(APITestCase):
         assert Post.objects.count() == 1
 
     def test_delete_post(self):
+        """ Тест для проверки удаления поста """
         post = Post.objects.create(
             title='Test',
             body='test body',
@@ -86,6 +94,7 @@ class APITest(APITestCase):
         assert response.status_code == 204
 
     def test_sign_up(self):
+        """ Тест для проверки регистрации """
         data = {
             'username': 'nikita',
             'email': 'nikitka@gmail.com',
@@ -96,7 +105,7 @@ class APITest(APITestCase):
         assert response.status_code == 302
 
     def test_sign_up_user_exists(self):
-        """ Must return 400 """
+        """ Тест для проверки работоспособности регистрации, если пользователь уже зарегистрирован в системе """
         data = {
             'username': self.user.username,
             'email': 'nikitka@gmail.com',
@@ -107,6 +116,7 @@ class APITest(APITestCase):
         assert response.status_code == 400
 
     def test_login(self):
+        """ Тест для проверки работоспособности авторизации """ 
         data = {
             'username': self.user.username,
             'password': 'dioaw212doawd'
@@ -116,7 +126,8 @@ class APITest(APITestCase):
         assert response.status_code == 302
 
     def test_login_invalid(self):
-        """ Must return 401 """
+        """ Тест для проверки работоспособности авторизации, если данные не верны """ 
+
         data = {
             'username': self.user.username,
             'password': 'some password'

@@ -13,11 +13,15 @@ from django.urls import reverse
 
 
 class AllUsersAPIView(ListAPIView):
+    """ View для отображения всех пользователей в системе """
+
     serializer_class = ListOfUserSerializer
     queryset = MyUser.objects.all()
 
 
 class ListOfPostsAPIView(ListAPIView):
+    """ View для отображения всех постов пользователя """
+
     serializer_class = ListOfUserPostsSerializer
     queryset = Post.objects.none()
 
@@ -27,6 +31,8 @@ class ListOfPostsAPIView(ListAPIView):
 
 
 class CreatePostAPIView(CreateAPIView):
+    """ View для создания поста """
+
     serializer_class = AddPostSerializer
     permission_classes = (IsAuthenticated, )
 
@@ -38,6 +44,8 @@ class CreatePostAPIView(CreateAPIView):
 
 
 class DeletePostAPIView(DestroyAPIView):
+    """ View для удаления поста """
+
     permission_classes = (IsAuthenticated, )
     lookup_field = 'id'
     queryset = Post.objects.none()
@@ -48,6 +56,7 @@ class DeletePostAPIView(DestroyAPIView):
 
 
 class SignUpAPIView(CreateAPIView):
+    """ View для обработки регистрации """
     serializer_class = SignUpSerializer
     queryset = MyUser.objects.none()
 
@@ -73,6 +82,7 @@ class SignUpAPIView(CreateAPIView):
 
 
 class SignInAPIView(APIView):
+    """ View для обработки авторизации """
 
     def post(self, request: Request, *args, **kwargs):
         serializer = SignInSerializer(data=request.data)

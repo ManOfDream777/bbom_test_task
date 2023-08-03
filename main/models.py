@@ -4,6 +4,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
 class MyUser(AbstractBaseUser, PermissionsMixin, models.Model):
+    """ Кастомная модель пользователя. Никаких изменений за исключением отключения некоторых полей, согласно тз. """
 
     username_validator = UnicodeUsernameValidator()
 
@@ -31,6 +32,8 @@ class MyUser(AbstractBaseUser, PermissionsMixin, models.Model):
 
 
 class Post(models.Model):
+    """ Модель поста """
+
     user = models.ForeignKey(
         MyUser, on_delete=models.CASCADE, verbose_name='Автор')
     title = models.CharField(verbose_name='Заголовок поста', max_length=128)
